@@ -1799,96 +1799,76 @@
         
         // Draw dependency lines
         function drawDependencyLines() {
-            // Remove existing SVG
-            const existingSvg = document.querySelector('.dependency-lines-container');
-            if (existingSvg) {
-                existingSvg.remove();
-            }
+    const existingSvg = document.querySelector('.dependency-lines-container');
+    if (existingSvg) {
+        existingSvg.remove();
+    }
+    if (!showDependencies) return;
+    const chartContainer = document.getElementById('chartContainer');
+    if (!chartContainer) return;
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('dependency-lines-container');
+    svg.style.position = 'absolute';
+    svg.style.left = '0';
+    svg.style.top = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', 'arrow');
+    marker.setAttribute('markerWidth', '6');
+    marker.setAttribute('markerHeight', '6');
+    marker.setAttribute('refX', '5');
+    marker.setAttribute('refY', '3');
+    marker.setAttribute('orient', 'auto');
+    
+    const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    arrowPath.setAttribute('d', 'M0,0 L0,6 L6,3 Z');
+    arrowPath.setAttribute('fill', '#888');
+    marker.appendChild(arrowPath);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+    
+    allTasks.forEach(task => {
+        if (task.dependency) {
+            const fromTask = allTasks.find(t => t.id === task.dependency.taskId);
+            if (!fromTask) return;
             
-            if (!showDependencies) return;
+            const fromBar = document.querySelector(`.gantt-bar[data-task-id="${fromTask.id}"]`);
+            const toBar = document.querySelector(`.gantt-bar[data-task-id="${task.id}"]`);
+            if (!fromBar || !toBar) return;
             
-            const chartContainer = document.getElementById('chartContainer');
-            if (!chartContainer) return;
+            const fromRect = fromBar.getBoundingClientRect();
+            const toRect = toBar.getBoundingClientRect();
+            const containerRect = chartContainer.getBoundingClientRect();
             
-            // Create SVG container
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('class', 'dependency-lines-container');
-      svg.style.position = 'absolute';
-svg.style.left = '0';
-svg.style.width = '100%';
-svg.style.pointerEvents = 'none';
+            // Dodane odstępy: +5 od końca paska, -5 przed początkiem
+            const fromX = fromRect.right - containerRect.left + 5;
+            const fromY = fromRect.top + fromRect.height / 2 - containerRect.top;
+            const toX = toRect.left - containerRect.left - 5;
+            const toY = toRect.top + toRect.height / 2 - containerRect.top;
             
-            // Define arrow marker
-            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-            marker.setAttribute('id', 'arrow');
-            marker.setAttribute('markerWidth', '6');
-            marker.setAttribute('markerHeight', '6');
-            marker.setAttribute('refX', '9');
-            marker.setAttribute('refY', '3');
-            marker.setAttribute('orient', 'auto');
-            marker.setAttribute('markerUnits', 'strokeWidth');
+            const midX = (fromX + toX) / 2;
             
-            const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            arrowPath.setAttribute('d', 'M0,0 L0,6 L6,3 Z');
-            arrowPath.setAttribute('fill', '#888');
-            marker.setAttribute('markerOpacity', '0.5');
-            arrowPath.setAttribute('class', 'dependency-arrow');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const d = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
             
-            marker.appendChild(arrowPath);
-            defs.appendChild(marker);
-            svg.appendChild(defs);
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', '#888');
+            path.setAttribute('stroke-width', '1.5');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('marker-end', 'url(#arrow)');
             
-            // Draw lines for each dependency
-            allTasks.forEach(task => {
-                if (task.dependency) {
-                    const fromTask = allTasks.find(t => t.id === task.dependency.taskId);
-                    if (!fromTask) return;
-                    
-                    const fromBar = document.querySelector(`.gantt-bar[data-task-id="${fromTask.id}"]`);
-                    const toBar = document.querySelector(`.gantt-bar[data-task-id="${task.id}"]`);
-                    
-                    if (!fromBar || !toBar) return;
-                    
-                    const fromRow = fromBar.closest('.chart-row');
-                    const toRow = toBar.closest('.chart-row');
-                    
-                    // Get row indices
-                    const allRows = Array.from(document.querySelectorAll('.chart-row'));
-                    const fromRowIndex = allRows.indexOf(fromRow);
-                    const toRowIndex = allRows.indexOf(toRow);
-                    
-                    // Get timeline cell width
-                    const timelineCell = fromBar.parentElement;
-                    const timelineWidth = timelineCell.offsetWidth;
-                    
-                    // Calculate positions based on bar percentages
-                    const fromBarLeft = parseFloat(fromBar.style.left);
-                    const fromBarWidth = parseFloat(fromBar.style.width);
-                    const toBarLeft = parseFloat(toBar.style.left);
-                    
-                    // Convert percentages to pixels
-                    const fromX = (timelineWidth * (fromBarLeft + fromBarWidth) / 100) + 3;
-                    const fromY = (fromRowIndex * 21) + 10.5; // 21px row height
-                    const toX = (timelineWidth * toBarLeft / 100) - 8;
-                    const toY = (toRowIndex * 21) + 10.5;
-                    
-                    // One day in pixels
-                    const visibleDays = getVisibleDays();
-                    const oneDayPixels = timelineWidth / visibleDays;
-                    
-                    // Draw path
-                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    
-                    // Create path: horizontal right, vertical, horizontal to target
-                    const midX = fromX + oneDayPixels;
-                    const d = `M ${fromX} ${fromY} L ${midX} ${fromY} L ${midX} ${toY} L ${toX - 5} ${toY}`;
-                    
-                    path.setAttribute('d', d);
-                    path.setAttribute('class', 'dependency-line');
-                    path.setAttribute('marker-end', 'url(#arrow)');
-                    
-                    svg.appendChild(path);
+            svg.appendChild(path);
+        }
+    });
+    
+    chartContainer.style.position = 'relative';
+    chartContainer.appendChild(svg);
+}
                 }
             });
             
