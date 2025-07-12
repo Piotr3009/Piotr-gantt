@@ -1813,8 +1813,8 @@
             // Create SVG container
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('class', 'dependency-lines-container');
-            svg.style.left = '600px';
-            svg.style.width = 'calc(100% - 600px)';
+            svg.style.left = '630px';
+            svg.style.width = 'calc(100% - 630px)';
             
             // Define arrow marker
             const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
