@@ -1813,8 +1813,10 @@
             // Create SVG container
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('class', 'dependency-lines-container');
-            svg.style.left = '600px';
-            svg.style.width = 'calc(100% - 600px)';
+      svg.style.position = 'absolute';
+svg.style.left = '0';
+svg.style.width = '100%';
+svg.style.pointerEvents = 'none';
             
             // Define arrow marker
             const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -1890,7 +1892,13 @@
                 }
             });
             
-            chartContainer.appendChild(svg);
+      // Znajdź pierwszy timeline-cell i dodaj SVG do niego
+const firstTimelineCell = chartContainer.querySelector('.timeline-cell');
+if (firstTimelineCell) {
+    // Ustaw pozycję relative dla timeline-cell jeśli nie ma
+    firstTimelineCell.style.position = 'relative';
+    firstTimelineCell.appendChild(svg);
+}
         }
         
         // Generate chart
