@@ -326,6 +326,7 @@
         window.confirmEditMilestone = confirmEditMilestone;
         window.editMilestone = editMilestone;
         window.deleteMilestone = deleteMilestone;
+        window.toggleProcurement = toggleProcurement;
         
         // Theme management
         function loadTheme() {
@@ -2536,10 +2537,57 @@ if (firstTimelineCell) {
         }
         
         // Initialize
-        window.toggleInstructions = function() {
-            const panel = document.getElementById('instructions-panel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+       window.toggleInstructions = function() {
+           const panel = document.getElementById('instructions-panel');
+           panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+       };
+
+        window.toggleProcurement = function() {
+            const panel = document.getElementById('procurement-panel');
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                generateProcurementList();
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
         };
+
+        function generateProcurementList() {
+            const tbody = document.querySelector('#procurementTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const formatter = date => formatDate(new Date(date));
+
+            allTasks.filter(t => /PO/i.test(t.name)).forEach(task => {
+                const row = document.createElement('tr');
+
+                const nameCell = document.createElement('td');
+                nameCell.textContent = task.name;
+                nameCell.style.padding = '4px 8px';
+                row.appendChild(nameCell);
+
+                const groupCell = document.createElement('td');
+                const groupName = availableGroups[task.group] ? availableGroups[task.group].name : task.group;
+                groupCell.textContent = groupName || '';
+                groupCell.style.padding = '4px 8px';
+                row.appendChild(groupCell);
+
+                const startCell = document.createElement('td');
+                const start = task.currentStart || task.start;
+                startCell.textContent = start ? formatter(start) : '';
+                startCell.style.padding = '4px 8px';
+                row.appendChild(startCell);
+
+                const endCell = document.createElement('td');
+                const end = task.currentEnd || task.end;
+                endCell.textContent = end ? formatter(end) : '';
+                endCell.style.padding = '4px 8px';
+                row.appendChild(endCell);
+
+                tbody.appendChild(row);
+            });
+        }
         
         loadConfiguration();
         loadCustomGroups();

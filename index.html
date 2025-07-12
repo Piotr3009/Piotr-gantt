@@ -246,6 +246,23 @@
     Skylon Development © all rights reserved
    </p>
   </div>
+  <div id="procurement-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:80%; max-width:800px; padding:20px; border:1px solid #555; background:#2d2d30; color:#f4f4f0; font-size:110%; max-height:80vh; overflow:auto; z-index:1001; border-radius:4px; box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+   <h2>Procurement Materials Order Sheet</h2>
+   <table id="procurementTable" style="width:100%; border-collapse:collapse;">
+    <thead>
+     <tr>
+      <th style="text-align:left; padding:4px 8px; border-bottom:1px solid #555;">Item</th>
+      <th style="text-align:left; padding:4px 8px; border-bottom:1px solid #555;">Group</th>
+      <th style="text-align:left; padding:4px 8px; border-bottom:1px solid #555;">Start</th>
+      <th style="text-align:left; padding:4px 8px; border-bottom:1px solid #555;">End</th>
+     </tr>
+    </thead>
+    <tbody></tbody>
+   </table>
+   <div style="margin-top: 15px; text-align:right;">
+    <button onclick="toggleProcurement()">Close</button>
+   </div>
+  </div>
   <div class="container">
    <div class="header">
     <input class="project-title" id="projectTitle" type="text" value="3-7 Herbal - all 3 floors"/>
@@ -322,6 +339,9 @@
     </button>
     <button class="toolbar-btn" id="toggle-instructions" onclick="toggleInstructions()">
      📖 Instructions
+    </button>
+    <button class="toolbar-btn" onclick="toggleProcurement()">
+     Procurement
     </button>
     <button class="toolbar-btn" id="themeToggleBtn" onclick="toggleTheme()">
      <span id="themeIcon">☀️</span>
