@@ -1866,9 +1866,9 @@
                     const toBarLeft = parseFloat(toBar.style.left);
                     
                     // Convert percentages to pixels
-                    const fromX = (timelineWidth * (fromBarLeft + fromBarWidth) / 100);
+                    const fromX = (timelineWidth * (fromBarLeft + fromBarWidth) / 100) + 3;
                     const fromY = (fromRowIndex * 21) + 10.5; // 21px row height
-                    const toX = (timelineWidth * toBarLeft / 100);
+                    const toX = (timelineWidth * toBarLeft / 100) - 8;
                     const toY = (toRowIndex * 21) + 10.5;
                     
                     // One day in pixels
