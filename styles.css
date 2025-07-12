@@ -318,7 +318,7 @@
         /* Also shift current, baseline, days columns */
         .current-header {
             position: sticky;
-            left: 330px !important;
+            left: 360px !important;
             width: 90px;
             min-width: 90px;
             max-width: 90px;
@@ -350,7 +350,7 @@
         
         .baseline-header {
             position: sticky;
-            left: 420px !important;
+            left: 450px !important;
             width: 90px;
             min-width: 90px;
             max-width: 90px;
@@ -382,7 +382,7 @@
         
         .days-header {
             position: sticky;
-            left: 510px !important;
+            left: 540px !important;
             width: 60px;
             min-width: 60px;
             max-width: 60px;
