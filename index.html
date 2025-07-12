@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Gantt Chart Project Manager v110
+  </title>
+  <!-- Biblioteki do eksportu -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+  </script>
+  <link href="styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div id="instructions-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:80%; max-width:800px; padding:20px; border:1px solid #555; background:#2d2d30; color:#f4f4f0; font-size:110%; max-height:80vh; overflow:auto; z-index:1001; border-radius:4px; box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+   <p>
+    <strong>
+     UWAGA:
+    </strong>
+    Ta wersja działa w przeglądarce jako plik HTML – po każdej zmianie naciśnij
+    <kbd>
+     Ctrl + F5
+    </kbd>
+    , by załadować najnowszą wersję. Wkrótce pojawi się też wersja desktopowa.
+   </p>
+   <h2>
+    Instrukcja obsługi
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Nowy projekt:
+     </strong>
+     Naciśnij przycisk
+     <em>
+      Nowy projekt
+     </em>
+     , aby rozpocząć tworzenie od zera.
+    </li>
+    <li>
+     <strong>
+      Grupy:
+     </strong>
+     Możesz dodać domyślną grupę lub utworzyć własną (kliknij
+     <em>
+      + Add Group
+     </em>
+     ). Po dodaniu grupy domyślnej automatycznie pojawią się w niej domyślne zadania. Możesz edytować, dodawać lub usuwać zadania (krzyżyk lub prawy klik →
+     <em>
+      Usuń
+     </em>
+     ).
+    </li>
+    <li>
+     <strong>
+      Milestones:
+     </strong>
+     Twórz własne milestone'y z dowolną nazwą lub wybierz z domyślnych. Możesz dodać notatkę. Usuń/edytuj po prawym kliknięciu na diament.
+    </li>
+    <li>
+     <strong>
+      Zależności (Trigger / Depends On):
+     </strong>
+     Prawy klik na pasek zadania →
+     <em>
+      Set Dependency
+     </em>
+     . Wybierz
+     <em>
+      Depends on
+     </em>
+     i
+     <em>
+      Wait Days
+     </em>
+     .
+     <strong>
+      Przykład:
+     </strong>
+     „Order &amp; send PO – kitchen" →
+     <em>
+      Wait Days: 36
+     </em>
+     → „Installation Kitchen". Przesunięcie PO przesuwa Installation Kitchen o 36 dni.
+    </li>
+    <li>
+     <strong>
+      Ręczne przesuwanie (Drag &amp; Drop):
+     </strong>
+     Kliknij i przeciągnij pasek zadania, aby zmienić daty. Zależności są egzekwowane.
+    </li>
+    <li>
+     <strong>
+      Eksport do druku A4:
+     </strong>
+     <em>
+      9 × A4
+     </em>
+     : wykres podzielony na 3×3 arkusze do wydruku i sklejenia;
+     <em>
+      1 × A4
+     </em>
+     : cały wykres na jednym arkuszu.
+    </li>
+    <li>
+     <strong>
+      Eksport danych:
+     </strong>
+     PDF (pełny wykres lub lista zadań), SVG (grafika do importu), Excel (tabela z zadaniami, datami i zależnościami).
+    </li>
+    <li>
+     <strong>
+      Baseline:
+     </strong>
+     Po ukończeniu harmonogramu naciśnij
+     <em>
+      Baseline
+     </em>
+     , wpisz hasło. Kolumna
+     <em>
+      Baseline
+     </em>
+     pokaże opóźnienia lub wcześniejsze zakończenie.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Miłego korzystania – SKYLON GROUP
+    </strong>
+   </p>
+   <p style="font-size:0.8em;">
+    Skylon Development © all rights reserved
+   </p>
+   <h2>
+    User Guide
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      New Project:
+     </strong>
+     Click
+     <em>
+      New Project
+     </em>
+     to start from scratch.
+    </li>
+    <li>
+     <strong>
+      Groups:
+     </strong>
+     Add a default group or create your own (
+     <em>
+      + Add Group
+     </em>
+     ). Default tasks auto-load. Edit, add, or delete tasks (X or right-click →
+     <em>
+      Delete
+     </em>
+     ).
+    </li>
+    <li>
+     <strong>
+      Milestones:
+     </strong>
+     Create custom milestones or choose defaults. Add notes. Delete/edit by right-clicking the diamond icon.
+    </li>
+    <li>
+     <strong>
+      Dependencies (Trigger / Depends On):
+     </strong>
+     Right-click a task bar →
+     <em>
+      Set Dependency
+     </em>
+     . Select
+     <em>
+      Depends On
+     </em>
+     and
+     <em>
+      Wait Days
+     </em>
+     .
+     <strong>
+      Example:
+     </strong>
+     "Order &amp; send PO – kitchen" →
+     <em>
+      Wait Days: 36
+     </em>
+     → "Installation Kitchen". Moving PO shifts Installation Kitchen by 36 days.
+    </li>
+    <li>
+     <strong>
+      Manual Drag &amp; Drop:
+     </strong>
+     Click and drag a task bar to adjust dates. Dependencies are enforced.
+    </li>
+    <li>
+     <strong>
+      A4 Print Export:
+     </strong>
+     <em>
+      9 × A4
+     </em>
+     : split into 3×3 sheets;
+     <em>
+      1 × A4
+     </em>
+     : entire chart on one page.
+    </li>
+    <li>
+     <strong>
+      Data Export:
+     </strong>
+     PDF, SVG (e.g., for Monday.com), Excel (task, dates, dependencies spreadsheet).
+    </li>
+    <li>
+     <strong>
+      Baseline:
+     </strong>
+     After finalizing the schedule, click
+     <em>
+      Baseline
+     </em>
+     , enter the password. The
+     <em>
+      Baseline
+     </em>
+     column shows delays or early finishes.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Miłego korzystania – Skylon Group
+    </strong>
+   </p>
+   <p style="font-size:0.8em;">
+    Skylon Development © all rights reserved
+   </p>
+  </div>
+  <div class="container">
+   <div class="header">
+    <input class="project-title" id="projectTitle" type="text" value="3-7 Herbal - all 3 floors"/>
+    <div class="legend" id="legend">
+     <div class="legend-item">
+      <div class="legend-color" style="background: #D97A34;">
+      </div>
+      <span>
+       Pre-Construction
+      </span>
+     </div>
+     <div class="legend-item">
+      <div class="legend-color" style="background: #8E4A9B;">
+      </div>
+      <span>
+       Site Setup
+      </span>
+     </div>
+     <div class="legend-item">
+      <div class="legend-color" style="background: #C44545;">
+      </div>
+      <span>
+       Demolition &amp; Strip-out
+      </span>
+     </div>
+     <div class="legend-item">
+      <div class="legend-color" style="background: #6D5147;">
+      </div>
+      <span>
+       Sub-Construction
+      </span>
+     </div>
+     <div class="legend-item">
+      <div class="legend-color" style="background: #687885;">
+      </div>
+      <span>
+       Construction – Main Structure
+      </span>
+     </div>
+     <div class="legend-item">
+      <div class="legend-color" style="background: #3A9CA7;">
+      </div>
+      <span>
+       Internal Works
+      </span>
+     </div>
+     <div class="legend-item">
+      <div class="legend-color" style="background: #4178B5;">
+      </div>
+      <span>
+       M&amp;E 1st fix
+      </span>
+     </div>
+     <button class="add-group-btn" onclick="showAddGroupModal()">
+      + Add Group
+     </button>
+    </div>
+   </div>
+   <div class="toolbar">
+    <button class="toolbar-btn primary" onclick="setBaseline()">
+     Set Baseline
+    </button>
+    <button class="toolbar-btn" onclick="changePassword()">
+     Change Password
+    </button>
+    <button class="toolbar-btn" id="sortBtn" onclick="toggleSort()">
+     Sort by: Added
+    </button>
+    <button class="toolbar-btn" id="dependenciesBtn" onclick="toggleDependencies()">
+     Dependencies: ON
+    </button>
+    <button class="toolbar-btn" onclick="showAddMilestoneModal()">
+     + Add Milestone
+    </button>
+    <button class="toolbar-btn" id="toggle-instructions" onclick="toggleInstructions()">
+     📖 Instructions
+    </button>
+    <button class="toolbar-btn" id="themeToggleBtn" onclick="toggleTheme()">
+     <span id="themeIcon">☀️</span>
+    </button>
+    <div class="zoom-controls" style="display:inline-flex; gap:4px; margin:0 10px; padding:0 10px; border-left:1px solid #3e3e42; border-right:1px solid #3e3e42;">
+     <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">
+      −
+     </button>
+     <button class="toolbar-btn" onclick="zoomReset()" title="Reset Zoom">
+      100%
+     </button>
+     <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">
+      +
+     </button>
+    </div>
+    <div class="export-dropdown">
+     <button class="toolbar-btn">
+      Export Project ▼
+     </button>
+     <div class="export-dropdown-content">
+      <button onclick="exportToJSON()">
+       Export to JSON
+      </button>
+      <button onclick="exportToPDF()">
+       Export to PDF (Table)
+      </button>
+      <button id="exportExcelBtn">
+       Export to Excel
+      </button>
+      <button id="exportCsvBtn">
+       Export to CSV
+      </button>
+      <button onclick="importProject()">
+       Import Project
+      </button>
+     </div>
+    </div>
+    <button class="toolbar-btn danger" onclick="newProject()">
+     New Project
+    </button>
+    <div class="month-controls">
+     <div class="month-controls-group">
+      <button class="month-control-btn" id="shiftLeftBtn" onclick="shiftMonthsLeft()" title="Shift left">
+       ←
+      </button>
+      <button class="month-control-btn" id="shiftRightBtn" onclick="shiftMonthsRight()" title="Shift right">
+       →
+      </button>
+     </div>
+     <div class="month-range-info" id="monthRangeInfo">
+      Jan - Dec 2025
+     </div>
+     <div class="month-controls-group">
+      <button class="month-control-btn" id="removeMonthBtn" onclick="removeMonth()" title="Show less months">
+       −
+      </button>
+      <button class="month-control-btn" id="addMonthBtn" onclick="addMonth()" title="Show more months">
+       +
+      </button>
+     </div>
+     <select id="pdfExportMode" style="margin-left: 40px; padding:6px; border-radius:3px; background:#3e3e42; color:#faf9f6; border:1px solid #555; font-size:11px;">
+      <option value="single">
+       Single page (printer)
+      </option>
+      <option value="multi-a4">
+       9×A4 (landscape)
+      </option>
+      <option value="multi-a3">
+       4×A3 (landscape)
+      </option>
+      <option value="multi-a2">
+       2×A2 (landscape)
+      </option>
+     </select>
+     <button class="toolbar-btn primary" id="exportPdfBtn">
+      Export PDF
+     </button>
+    </div>
+   </div>
+   <div class="chart-wrapper">
+    <div class="chart-header">
+     <div class="row-number-header">
+      No.
+     </div>
+     <div class="task-header">
+      Task Name
+     </div>
+     <div class="current-header">
+      Current
+     </div>
+     <div class="baseline-header">
+      Baseline
+     </div>
+     <div class="days-header">
+      Days
+     </div>
+     <div class="timeline-header">
+      <div class="months-row" id="monthsRow">
+      </div>
+     </div>
+    </div>
+    <div class="chart-container" id="chartContainer">
+    </div>
+   </div>
+  </div>
+  <!-- Modal for adding groups -->
+  <div class="modal" id="addGroupModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     Add New Group
+    </div>
+    <div class="group-type-selector">
+     <label>
+      Select group type:
+     </label>
+     <div class="radio-group">
+      <label>
+       <input checked="" name="groupType" type="radio" value="template"/>
+       <span>
+        Template group
+       </span>
+      </label>
+      <label>
+       <input name="groupType" type="radio" value="custom"/>
+       <span>
+        Custom group
+       </span>
+      </label>
+     </div>
+    </div>
+    <div id="templateGroupSection">
+     <select id="templateGroupSelect">
+      <option value="">
+       Select template group...
+      </option>
+      <option value="pre-construction">
+       Pre-Construction
+      </option>
+      <option value="site-setup">
+       Site Setup
+      </option>
+      <option value="demolition-strip-out">
+       Demolition &amp; Strip-out
+      </option>
+      <option value="sub-construction">
+       Sub-Construction
+      </option>
+      <option value="construction-main-structure">
+       Construction – Main Structure
+      </option>
+      <option value="internal-works">
+       Internal Works
+      </option>
+      <option value="me-1st-fix">
+       M&amp;E 1st fix
+      </option>
+      <option value="me-2nd-fix">
+       M&amp;E 2nd fix
+      </option>
+      <option value="finishing">
+       Finishing
+      </option>
+      <option value="external-works">
+       External Works
+      </option>
+      <option value="testing-commissioning">
+       Testing &amp; Commissioning
+      </option>
+      <option value="handover-practical-completion">
+       Handover / Practical Completion
+      </option>
+     </select>
+     <label style="margin-top: 10px; display: block; font-size: 12px;">
+      Group start date:
+     </label>
+     <input id="templateStartDate" type="date"/>
+     <div class="template-info" id="templateInfo" style="display: none;">
+      Tasks will be added automatically
+     </div>
+    </div>
+    <div id="customGroupSection" style="display: none;">
+     <input id="groupName" placeholder="Group name" type="text"/>
+     <input id="groupColor" type="color" value="#6b46c1">
+     </input>
+    </div>
+    <div style="margin-top: 15px;">
+     <button onclick="addNewGroup()">
+      Add
+     </button>
+     <button onclick="closeModal('addGroupModal')">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Modal for baseline password -->
+  <div class="modal" id="baselineModal">
+   <div class="modal-content">
+    <div class="modal-header" id="baselineModalHeader">
+     Set Baseline
+    </div>
+    <input id="baselinePassword" placeholder="Password" type="password"/>
+    <div style="margin-top: 15px;">
+     <button onclick="confirmBaseline()">
+      Confirm
+     </button>
+     <button onclick="closeModal('baselineModal')">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Modal for password change -->
+  <div class="modal" id="passwordModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     Change Password
+    </div>
+    <input id="oldPassword" placeholder="Old password" type="password"/>
+    <input id="newPassword" placeholder="New password" type="password"/>
+    <input id="confirmPassword" placeholder="Confirm new password" type="password"/>
+    <div style="margin-top: 15px;">
+     <button onclick="confirmPasswordChange()">
+      Change
+     </button>
+     <button onclick="closeModal('passwordModal')">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Modal for adding tasks -->
+  <div class="modal" id="addTaskModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     Add Task
+    </div>
+    <input id="newTaskName" maxlength="50" placeholder="Task name" type="text"/>
+    <input id="newTaskStart" type="date"/>
+    <input id="newTaskEnd" type="date"/>
+    <select id="newTaskGroup">
+     <option value="pre-construction">
+      Pre-Construction
+     </option>
+     <option value="site-setup">
+      Site Setup
+     </option>
+     <option value="demolition-strip-out">
+      Demolition &amp; Strip-out
+     </option>
+     <option value="sub-construction">
+      Sub-Construction
+     </option>
+     <option value="construction-main-structure">
+      Construction – Main Structure
+     </option>
+     <option value="internal-works">
+      Internal Works
+     </option>
+     <option value="me-1st-fix">
+      M&amp;E 1st fix
+     </option>
+     <option value="me-2nd-fix">
+      M&amp;E 2nd fix
+     </option>
+     <option value="finishing">
+      Finishing
+     </option>
+     <option value="external-works">
+      External Works
+     </option>
+     <option value="testing-commissioning">
+      Testing &amp; Commissioning
+     </option>
+     <option value="handover-practical-completion">
+      Handover / Practical Completion
+     </option>
+    </select>
+    <div class="dependencies-section">
+     <label>
+      Dependencies (optional):
+     </label>
+     <div class="dependency-input">
+      <label for="dependencyGroupSelect">
+       Grupa:
+      </label>
+      <select id="dependencyGroupSelect">
+       <option value="">
+        Wybierz grupę
+       </option>
+      </select>
+      <label for="newTaskDependsOn">
+       Zadanie:
+      </label>
+      <select id="newTaskDependsOn">
+       <option value="">
+        None
+       </option>
+      </select>
+      <input id="newTaskWaitDays" min="0" placeholder="Days" type="number" value="0"/>
+      <span style="font-size: 11px; color: #9e9e9e;">
+       days wait
+      </span>
+     </div>
+    </div>
+    <div style="margin-top: 15px;">
+     <button onclick="confirmAddTask()">
+      Add
+     </button>
+     <button onclick="closeModal('addTaskModal')">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Modal for adding milestones -->
+  <div class="modal" id="addMilestoneModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     Add Milestone
+    </div>
+    <input id="newMilestoneName" maxlength="50" placeholder="Enter milestone name or select from list" type="text"/>
+    <input id="newMilestoneDate" type="date"/>
+    <select id="newMilestoneTask">
+     <option value="">
+      Select related task...
+     </option>
+    </select>
+    <select id="newMilestoneGroup">
+     <option value="pre-construction">
+      Pre-Construction
+     </option>
+     <option value="site-setup">
+      Site Setup
+     </option>
+     <option value="demolition-strip-out">
+      Demolition &amp; Strip-out
+     </option>
+     <option value="sub-construction">
+      Sub-Construction
+     </option>
+     <option value="construction-main-structure">
+      Construction – Main Structure
+     </option>
+     <option value="internal-works">
+      Internal Works
+     </option>
+     <option value="me-1st-fix">
+      M&amp;E 1st fix
+     </option>
+     <option value="me-2nd-fix">
+      M&amp;E 2nd fix
+     </option>
+     <option value="finishing">
+      Finishing
+     </option>
+     <option value="external-works">
+      External Works
+     </option>
+     <option value="testing-commissioning">
+      Testing &amp; Commissioning
+     </option>
+     <option value="handover-practical-completion">
+      Handover / Practical Completion
+     </option>
+    </select>
+    <label style="margin-top: 10px; display: block;">
+     Notes (optional):
+    </label>
+    <textarea id="newMilestoneNotes" placeholder="Add notes..."></textarea>
+    <div style="margin-top: 15px;">
+     <button onclick="confirmAddMilestone()">
+      Add
+     </button>
+     <button onclick="closeModal('addMilestoneModal')">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Modal for setting dependencies -->
+  <div class="modal" id="setDependencyModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     Set Dependencies
+    </div>
+    <div style="margin-bottom: 15px;">
+     <label style="font-weight: bold;">
+      This task triggers:
+     </label>
+     <label for="triggerGroupSelect">
+      Group:
+     </label>
+     <select id="triggerGroupSelect">
+      <option value="">
+       Wybierz grupę...
+      </option>
+     </select>
+     <label for="triggersSelect">
+      Task:
+     </label>
+     <select id="triggersSelect">
+      <option value="">
+       Najpierw wybierz grupę
+      </option>
+     </select>
+     <label>
+      Days after this task:
+     </label>
+     <input id="triggerWaitDays" min="0" type="number" value="0"/>
+    </div>
+    <div style="border-top: 1px solid #555; padding-top: 15px; margin-top: 15px;">
+     <label style="font-weight: bold;">
+      This task depends on:
+     </label>
+     <select id="dependsOnSelect">
+      <option value="">
+       None
+      </option>
+     </select>
+     <label>
+      Wait days after completion:
+     </label>
+     <input id="dependencyWaitDays" min="0" type="number" value="0"/>
+    </div>
+    <div style="margin-top: 15px;">
+     <button onclick="confirmSetDependency()">
+      Set
+     </button>
+     <button onclick="closeModal('setDependencyModal')">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Context menu for changing task group -->
+  <div class="context-menu" id="contextMenu">
+   <div class="context-menu-item header">
+    Change Group
+   </div>
+  </div>
+  <!-- Context menu for milestone -->
+  <div class="context-menu" id="milestoneContextMenu">
+   <div class="context-menu-item" onclick="editMilestone()">
+    Edit Milestone
+   </div>
+   <div class="context-menu-item danger" onclick="deleteMilestone()">
+    Delete Milestone
+   </div>
+  </div>
+  <!-- Modal for editing milestones -->
+  <div class="modal" id="editMilestoneModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     Edit Milestone
+    </div>
+    <input id="editMilestoneName" maxlength="50" placeholder="Milestone name" type="text"/>
+    <input id="editMilestoneDate" type="date"/>
+    <label style="margin-top: 10px; display: block;">
+     Notes (optional):
+    </label>
+    <textarea id="editMilestoneNotes" placeholder="Add notes..."></textarea>
+    <div style="margin-top: 15px;">
+     <button onclick="window.confirmEditMilestone()" type="button">
+      Save
+     </button>
+     <button onclick="closeModal('editMilestoneModal')" type="button">
+      Cancel
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Hidden file input for import -->
+  <input accept=".json" id="fileInput" style="display: none;" type="file"/>
+  <script src="main.js">
+  </script>
+ </body>
+</html>
