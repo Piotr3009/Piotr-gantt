@@ -1588,6 +1588,24 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
+        /* Procurement panel light theme */
+        body.light-theme #procurement-panel {
+            background: #eae5db;
+            border-color: #c0bbb1;
+            color: #333333;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        #procurementTable th,
+        #procurementTable td {
+            border-bottom: 1px solid #555;
+        }
+
+        body.light-theme #procurementTable th,
+        body.light-theme #procurementTable td {
+            border-color: #c0bbb1;
+        }
+
         /* Radio buttons light theme */
         body.light-theme .radio-group label {
             color: #333333;
